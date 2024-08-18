@@ -1,4 +1,7 @@
 /* ######### Ransom Roulette Paper Examples ########## */
+/* Author: Eckhard Pfluegel
+   Date: August 2024
+*/
 
 normalise(A) :=
 	block(
