@@ -55,26 +55,49 @@ gen_eigen_sys(A, [mu]) :=
 		res
 	)$
 	
-    /* Generic birational game */
-    V: matrix([-c_p,-c_p-c_l],[0,-c_l]);
-    A: matrix([b_p-c_d,b_p],[-c_d,0]);
-    S: matrix([alpha_1*beta_1, alpha_2*beta_1], [alpha_1*beta_2, alpha_2*beta_2]); 
     
-    /* Compute generic associated bimatrix game */
-    Alpha: matrix([alpha_1,0],[0,alpha_2]);
-    Beta: matrix([beta_1,0],[0,beta_2]);
-    Vtilde: invert(Beta).V.invert(Alpha);
-    Atilde: invert(Beta).A.invert(Alpha);  
-    E: matrix([1,1],[1,1]);    
+solve_ransom_roulette(V, A, S) :=
+	/* INPUT: The real matrices V, A and S>0 defining the bimatrix ransom roulette stochastic stopping game as introduced in []. */
+    /* OUTPUT: A list of the equilibrium solutions of the game. */
+	block(
+        if not mat_positive(S) then exit(-1)
+        else
+        (
+            r: rank(S),
+            sols: {},
+            if (r = 1) then
+            (
+            
+            ),
+            if (r = 2) then
+            (
+            
+            ),
+            return(sols)
+        )
+    )$
     
-    eigenV:gen_eigen_sys(Vtilde);
-    vx: eigenV[1][1];
-    ytilde: eigenV[1][3][1];
-    y: Alpha.ytilde;
-    Atilde: A.invert(Alpha);
-    eigenA:gen_eigen_sys(Atilde);
-    vy: eigenA[1][1];
-    xtilde: eigenA[1][2][1];
-    x: xtilde.Beta;
-    
-    /* Now vx and vy are the game values, and x and y the corresponding equilibrium solutions */
+
+/* Generic birational game */
+V: matrix([-c_p,-c_p-c_l],[0,-c_l]);
+A: matrix([b_p-c_d,b_p],[-c_d,0]);
+S: matrix([alpha_1*beta_1, alpha_2*beta_1], [alpha_1*beta_2, alpha_2*beta_2]); 
+
+/* Compute generic associated bimatrix game */
+Alpha: matrix([alpha_1,0],[0,alpha_2]);
+Beta: matrix([beta_1,0],[0,beta_2]);
+Vtilde: invert(Beta).V.invert(Alpha);
+Atilde: invert(Beta).A.invert(Alpha);  
+E: matrix([1,1],[1,1]);    
+
+eigenV:gen_eigen_sys(Vtilde);
+vx: eigenV[1][1];
+ytilde: eigenV[1][3][1];
+y: Alpha.ytilde;
+Atilde: A.invert(Alpha);
+eigenA:gen_eigen_sys(Atilde);
+vy: eigenA[1][1];
+xtilde: eigenA[1][2][1];
+x: xtilde.Beta;
+
+/* Now vx and vy are the game values, and x and y the corresponding equilibrium solutions */
