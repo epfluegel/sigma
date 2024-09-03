@@ -1,0 +1,108 @@
+/* ######### Ransom Roulette Paper Examples ########## */
+/* Author: Eckhard Pfluegel
+   Date: August 2024
+*/
+
+normalise(A) :=
+	block(
+		[tmp, AA, i, j, s],
+		
+		tmp: matrix_size(A),
+		AA: matrixmap(lambda([i], ratsimp(i)), A),
+		s: 0,
+		for i: 1 while i <= tmp[1] do 
+			for j: 1 while j <= tmp[2] do 
+				(
+					s: s+AA[i][j]
+				), 	
+		if (s = 0) then s: 1,
+		matrixmap(lambda([i], ratsimp(i)), AA/s)
+	)$
+	
+gen_eigen_sys(A, [mu]) :=
+	/* Compute the left and right gen_eigen_sys of the regular matrix pencil A - lambda E 
+       OUTPUT: a list of eigenvalues together with their corresponding left and right eigenvectors. */
+	block(
+		[P, lambda, f, fs, s, M, n, i, j, k, t, res, xA, yA],
+		
+		res: [],
+		 
+		t(x) := normalise(transpose(x)),
+		P: A-lambda,
+		f: expand(determinant(P)),
+		/*print(f),*/
+		if f = 0 then 
+			return([])
+		else if hipow(f, lambda) = 0 then 
+			return([])
+		else if hipow(f, lambda) = 1 then
+			fs: [f]
+		else 
+			fs: args(factor(f)),
+			
+		/*print(factor(f), fs),*/
+		for k: 1 while k <= length(fs) do
+		(
+			if (hipow(fs[k], lambda)>0) /* and not ((length(mu) = 1) and hipow(gcd(fs[k], mu[1])) > 0) */ then
+			(
+				s: solve(fs[k], lambda)[1],
+				M: subst(s,P),
+				
+				res: append(res, [[rhs(s), map(t, args(nullspace(transpose(M)))), map(normalise, args(nullspace(M)))]])
+			)
+		),
+	
+		res
+	)$
+	
+    
+solve_ransom_roulette(V, A, S) :=
+	/* INPUT: The real matrices V, A and S>0 defining the bimatrix ransom roulette stochastic stopping game as introduced in []. */
+    /* OUTPUT: A list of the equilibrium solutions of the game. */
+	block(
+        if not mat_positive(S) then exit(-1)
+        else
+        (
+            r: rank(S),
+            sols: {},
+            if (r = 1) then
+            (
+            
+            ),
+            if (r = 2) then
+            (
+            
+            ),
+            return(sols)
+        )
+    )$
+    
+gen_ransom_roulette_game() :=
+/* Generic birational game */
+    block(
+        
+        V: matrix([-c_p,-c_p-c_l],[0,-c_l]),
+        A: matrix([b_p-c_d,b_p],[-c_d,0]),
+        S: matrix([alpha_1*beta_1, alpha_2*beta_1], [alpha_1*beta_2, alpha_2*beta_2]),
+        
+        return([V, A, S])
+    ),
+    
+/* Compute generic associated bimatrix game */
+Alpha: matrix([alpha_1,0],[0,alpha_2]);
+Beta: matrix([beta_1,0],[0,beta_2]);
+Vtilde: invert(Beta).V.invert(Alpha);
+Atilde: invert(Beta).A.invert(Alpha);  
+E: matrix([1,1],[1,1]);    
+
+eigenV:gen_eigen_sys(Vtilde);
+vx: eigenV[1][1];
+ytilde: eigenV[1][3][1];
+y: Alpha.ytilde;
+Atilde: A.invert(Alpha);
+eigenA:gen_eigen_sys(Atilde);
+vy: eigenA[1][1];
+xtilde: eigenA[1][2][1];
+x: xtilde.Beta;
+
+/* Now vx and vy are the game values, and x and y the corresponding equilibrium solutions */
